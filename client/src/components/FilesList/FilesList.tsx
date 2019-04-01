@@ -4,22 +4,34 @@ import { Dispatch } from "redux";
 import { connect } from "react-redux";
 import React from "react";
 import { Table, Divider, Tag, Modal, Button, Input, Spin } from "antd";
+const { TextArea } = Input;
 
 // src
 import {
   getFiles,
   deleteFile,
-  updateIsLoading
+  updateIsLoading,
+  editFile
 } from "../../action-creators/index";
 import { ApplicationState, Gist } from "../../application-state";
 import { GistWithFiles } from "./../../application-state";
 
 type FileState = {
-  selectedGist: GistWithFiles;
+  fileName: string;
+  fileContent: string;
+  visible: boolean;
+  gistId: string;
+  oldFileName: string;
+  isEditMode: boolean;
 };
 class FilesList extends React.Component<FileProps, FileState> {
   state: FileState = {
-    selectedGist: { id: "", description: "", files: [], html_url: "" }
+    fileName: "",
+    fileContent: "",
+    visible: false,
+    gistId: "",
+    oldFileName: "",
+    isEditMode: false
   };
   // parse id from query string
   parsed = queryString.parse(this.props.location.search);
@@ -32,7 +44,7 @@ class FilesList extends React.Component<FileProps, FileState> {
       key: "x",
       render: (text: string, record: any) => (
         <span>
-          <a>Edit</a>
+          <a onClick={() => this.showModal(record)}>Edit</a>
           <Divider type="vertical" />
           <a onClick={() => this.handleDelete(record)}>Delete</a>
         </span>
@@ -53,15 +65,94 @@ class FilesList extends React.Component<FileProps, FileState> {
     const { gistId } = this.parsed;
     getFiles(gistId);
   }
-
+  showModal = (file: any) => {
+    const isEditMode = file ? true : false;
+    const fileContent = file ? file.content : "";
+    const fileName = file ? file.name : "";
+    this.setState({
+      visible: true,
+      fileContent,
+      fileName,
+      oldFileName: fileName,
+      isEditMode
+    });
+  };
+  handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value: fileName } = e.currentTarget;
+    this.setState({ fileName });
+  };
+  handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value: fileContent } = e.currentTarget;
+    this.setState({ fileContent });
+  };
+  handleFileCancel = () => {
+    console.log("cancelling file cration");
+    this.setState({
+      visible: false,
+      fileName: "",
+      fileContent: ""
+    });
+  };
+  handleFileCreation = () => {
+    console.log("creating new file", this.state);
+    const { editFile, selectedGist, updateIsLoading } = this.props;
+    const { fileContent, fileName, oldFileName, isEditMode } = this.state;
+    // if file with this name already exist, return in add
+    console.log("edit mode: ", isEditMode);
+    if (!isEditMode && selectedGist.files.find(f => f.name === fileName)) {
+      console.log("File with this name already exists.");
+      return;
+    }
+    updateIsLoading(true);
+    editFile(selectedGist.id, oldFileName, fileName, fileContent);
+    // isEditMode ? editGist(gistId, userInput) : createGist(userInput);
+    this.setState({
+      visible: false,
+      fileName: "",
+      fileContent: "",
+      oldFileName: ""
+    });
+  };
   public render() {
     const { files = [] } = this.props.selectedGist;
     const { isLoading = false, gistWithFiles } = this.props;
-    console.log("Selected gist: ", this.props.selectedGist);
-    // gistWithFiles.filter((g:GistWithFiles) => g.id)
+    const { visible, fileName, fileContent } = this.state;
+    const {
+      showModal,
+      handleFileCreation,
+      handleFileCancel,
+      handleContentChange,
+      handleNameChange,
+      columns
+    } = this;
+
     return (
       <div>
         <Spin spinning={isLoading}>
+          <Button type="primary" onClick={() => showModal(null)}>
+            New
+          </Button>
+          <Modal
+            title="Add new File"
+            visible={visible}
+            onOk={() => handleFileCreation()}
+            confirmLoading={isLoading}
+            onCancel={handleFileCancel}
+          >
+            <Input
+              placeholder="File Name"
+              id="fileName"
+              onChange={handleNameChange}
+              value={fileName}
+            />
+            <TextArea
+              placeholder="Content"
+              id="fileContent"
+              autosize={{ minRows: 2, maxRows: 6 }}
+              onChange={handleContentChange}
+              value={fileContent}
+            />
+          </Modal>
           <Table
             columns={this.columns}
             expandedRowRender={record => (
@@ -78,12 +169,18 @@ class FilesList extends React.Component<FileProps, FileState> {
 //  all notebook props
 interface FileProps {
   location: any;
-  getFiles: (id: string) => void;
-  deleteFile: (id: string, fileName: string) => void;
-  updateIsLoading: (isLoading: boolean) => void;
   selectedGist: ApplicationState["selectedGist"];
   isLoading: boolean;
   gistWithFiles: Array<GistWithFiles>;
+  getFiles: (id: string) => void;
+  deleteFile: (id: string, fileName: string) => void;
+  updateIsLoading: (isLoading: boolean) => void;
+  editFile: (
+    id: string,
+    oldFileName: string,
+    updatedFileName: string,
+    fileContent: string
+  ) => void;
 }
 type FileStateProps = Pick<
   FileProps,
@@ -91,7 +188,7 @@ type FileStateProps = Pick<
 >;
 type FileDispatchProps = Pick<
   FileProps,
-  "getFiles" | "deleteFile" | "updateIsLoading"
+  "getFiles" | "deleteFile" | "updateIsLoading" | "editFile"
 >;
 
 function mapStateToProps(
@@ -117,6 +214,14 @@ function mapDispatchToProps(dispatch: Dispatch<any>): FileDispatchProps {
     },
     updateIsLoading: async (isLoading: boolean) => {
       await dispatch(updateIsLoading(isLoading));
+    },
+    editFile: async (
+      id: string,
+      oldFileName: string,
+      updatedFileName: string,
+      fileContent: string
+    ) => {
+      await dispatch(editFile(id, oldFileName, updatedFileName, fileContent));
     }
   };
 }

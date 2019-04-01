@@ -3,7 +3,12 @@ import { Dispatch } from "redux";
 import axios from "axios";
 // src
 import * as ActionTypes from "../action-types/index";
-import { ApplicationState, Gist, GistWithFiles } from "../application-state";
+import {
+  ApplicationState,
+  Gist,
+  GistWithFiles,
+  File
+} from "../application-state";
 
 const apiUrl = "http://localhost:5000/api";
 export type UpdateGreetingAction = {
@@ -48,6 +53,10 @@ export type CreateGistAction = {
 export type EditGistAction = {
   type: ActionTypes.EDIT_GIST;
   gist: Gist;
+};
+export type EditFileAction = {
+  type: ActionTypes.EDIT_FILE;
+  data: { id: string; file: File };
 };
 
 export type IncrementAction = {
@@ -218,6 +227,46 @@ export function deleteFile(id: string, fileName: string) {
       })
       .catch(function(error) {
         console.log("Error while deleting file", error);
+      });
+  };
+}
+export function editFile(
+  id: string,
+  oldFileName: string,
+  updatedFileName: string,
+  fileContent: string
+) {
+  return (dispatch: Dispatch, getState: any) => {
+    const gitHubUser = getGitHubUserFromLocalStorage();
+    const { token } = gitHubUser;
+    const options = {
+      token,
+      id,
+      oldFileName,
+      updatedFileName,
+      fileContent
+    };
+    console.log("Options sendng to api, ", options);
+    axios
+      .post(`${apiUrl}/editFiles`, options)
+      .then(function(response) {
+        console.log("File edited successfully", response.data);
+        const { data: file } = response;
+        const data = {
+          id,
+          file
+        };
+        dispatch({
+          type: ActionTypes.EDIT_FILE,
+          data
+        });
+        // dispatch({
+        //   type: ActionTypes.UPDATE_IS_LOADING,
+        //   isLoading: false
+        // });
+      })
+      .catch(function(error) {
+        console.log("Error while editing file", error);
       });
   };
 }

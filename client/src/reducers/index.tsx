@@ -12,7 +12,8 @@ type Action =
   | Actions.UpdateIsAuthenticatedAction
   | Actions.UpdateIsLoadingAction
   | Actions.EditGistAction
-  | Actions.UpdateSelectedGistAction;
+  | Actions.UpdateSelectedGistAction
+  | Actions.EditFileAction;
 import { ApplicationState, defaultState } from "../application-state";
 import { GistWithFiles } from "./../application-state";
 
@@ -111,6 +112,25 @@ const updateState = (
         ...state,
         selectedGist: updatedGist
       };
+    case ActionTypes.EDIT_FILE:
+      const { data } = action;
+      const gistsWithFilesCopy = state.gistWithFiles.slice(); // Create local copy to change.
+      gistsWithFilesCopy.forEach(g => {
+        if (g.id === data.id) {
+          //
+          const index = g.files.findIndex(f => f.raw_url == data.file.raw_url);
+          g.files = g.files.filter(f => f.raw_url != data.file.raw_url);
+          console.log("Filtered files", g.files);
+          g.files = [data.file, ...g.files];
+          console.log("updated files", g.files);
+        }
+      });
+      return {
+        ...state,
+        isLoading: false,
+        gistWithFiles: gistsWithFilesCopy
+      };
+
     default:
       return state;
   }
