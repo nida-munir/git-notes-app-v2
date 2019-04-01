@@ -37,12 +37,13 @@ const updateState = (
       const { selectedGist: currentGist } = action;
       return {
         ...state,
-        selectedGist: currentGist
+        selectedGist: currentGist,
+        isLoading: false
       };
 
     case ActionTypes.UPDATE_IS_LOADING:
       const { isLoading } = action;
-
+      console.log("prev state", state.isLoading + " " + isLoading);
       return {
         ...state,
         isLoading
@@ -94,7 +95,7 @@ const updateState = (
       // update gist with files
       const { gistWithFiles } = state;
       const updatedGistWithFiles = [...gistWithFiles, selectedGist];
-
+      console.log(updatedGistWithFiles);
       return {
         ...state,
         selectedGist,

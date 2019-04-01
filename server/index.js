@@ -90,7 +90,10 @@ app.post("/api/files", (req, res) => {
       // console.log("gist", gist);
       return res.send(gist);
     })
-    .catch(console.error);
+    .catch(err => {
+      return res.status(400).json({ error: "Not found" });
+      console.log("Not Found");
+    });
 });
 
 app.post("/api/deleteGist", (req, res) => {

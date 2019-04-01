@@ -352,18 +352,23 @@ export function getFiles(id: string) {
       token: token,
       id: id
     };
+    console.log("Searching gist by id..");
     axios
       .post(`${apiUrl}/files`, options)
       .then(function(response) {
         const { data: selectedGist } = response;
-        console.log("Successfully loaded all files.");
+        console.log("Successfully loaded all files.", response);
         dispatch({
           type: ActionTypes.GET_FILES,
           selectedGist
         });
       })
       .catch(function(error) {
-        console.log("Error while getting gist files.", error);
+        console.log("Gist not found.");
+        dispatch({
+          type: ActionTypes.UPDATE_SELECTED_GIST,
+          selectedGist: {}
+        });
       });
   };
 }
