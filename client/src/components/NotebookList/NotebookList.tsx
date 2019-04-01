@@ -163,9 +163,14 @@ class NotebookList extends React.Component<NotebookProps, {}> {
       <div>
         <Spin spinning={isLoading}>
           <div>
-            <Button type="primary" onClick={() => showModal(null)}>
+            <Button
+              type="primary"
+              onClick={() => showModal(null)}
+              className="hoffset"
+            >
               New
             </Button>
+
             <Button type="primary" onClick={this.refresh}>
               Refresh
             </Button>

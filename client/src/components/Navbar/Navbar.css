@@ -1,0 +1,12 @@
+#logo {
+  display: inline-block;
+  height: 40px;
+}
+
+#logo > img {
+  vertical-align: middle;
+}
+.nav-wrapper {
+  padding-left: 100px;
+  padding-right: 100px;
+}

@@ -12,11 +12,10 @@ import {
 import Welcome from "../src/components/Welcome/Welcome";
 import NotebookList from "./components/NotebookList/NotebookList";
 import FilesList from "./components/FilesList/FilesList";
-import { auth } from "./components/App/utils";
-import { NavLinks } from "./components/App/NavLinks";
-
+import "./components/App/App.css";
 import { PrivateRoute } from "./components/App/PrivateRoute";
 import Search from "./components/Search/Search";
+import Navbar from "./components/Navbar/Navbar";
 
 // class Login extends React.Component {
 //   state = {
@@ -55,8 +54,8 @@ class App extends React.Component {
       <div>
         <BrowserRouter>
           <div>
-            <main>
-              <NavLinks />
+            <Navbar />
+            <main id="main">
               <Switch>
                 <Route path="/login" component={Welcome} />
                 <Route path="/search" component={Search} />
