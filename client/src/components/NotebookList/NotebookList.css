@@ -1,0 +1,6 @@
+@import "~antd/dist/antd.css";
+
+.your-table table {
+	width: auto;
+	background-color: palevioletred;
+}
