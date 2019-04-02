@@ -96,7 +96,7 @@ app.post("/api/files", (req, res) => {
       return res.status(404).json({ error: "Not found" });
     });
 });
-
+// delete a gist by id
 app.post("/api/deleteGist", (req, res) => {
   const {
     body: { token, id }
@@ -104,13 +104,15 @@ app.post("/api/deleteGist", (req, res) => {
   const gists = new Gists({
     token: token
   });
-
   gists
     .delete(id)
-    .then(r => {
+    .then(response => {
+      // send gist id back
       return res.send(id);
     })
-    .catch(console.error);
+    .catch(err => {
+      return res.status(404).json({ error: "Gist couldn't be deleted." });
+    });
 });
 
 app.post("/api/deleteFile", (req, res) => {
@@ -120,21 +122,19 @@ app.post("/api/deleteFile", (req, res) => {
   const gists = new Gists({
     token: token
   });
-  console.log("body", req.body);
+  // To delete a file, edit the gist and set filename to null
   const options = {
     files: { [fileName]: null }
   };
-  console.log("options:", options);
   gists
     .edit(id, options)
-    .then(res => {
-      console.log("RESPONSE:", res.body);
-    })
-    .then(r => {
-      console.log("Successfully deleted a gist.");
+    .then(response => {
+      // Send deleted file name
       return res.send(fileName);
     })
-    .catch(console.error);
+    .catch(err => {
+      return res.status(404).json({ error: "File couldn't be deleted." });
+    });
 });
 app.post("/api/editFiles", (req, res) => {
   const {
