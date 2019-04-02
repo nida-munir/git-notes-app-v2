@@ -5,8 +5,9 @@ import { Input, Spin } from "antd";
 import { Dispatch } from "redux";
 import { Table, Modal, message, Alert } from "antd";
 // src
-import { getFiles } from "../../action-creators/index";
+import { getFiles, removeSelectedGist } from "../../action-creators/index";
 import { ApplicationState, GistWithFiles, File } from "../../application-state";
+import { SearchDispatchProps, SearchState, SearchProps } from "../types";
 
 const Search = Input.Search;
 
@@ -27,7 +28,7 @@ class SearchGists extends React.Component<SearchProps, SearchState> {
   showGistUrl = (gist: any) => {
     const { raw_url } = gist;
     Modal.success({
-      title: "Url genrated successfully.",
+      title: "Share",
       content: raw_url
     });
   };
@@ -36,29 +37,24 @@ class SearchGists extends React.Component<SearchProps, SearchState> {
     query: "",
     visible: false
   };
-  //   handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //     const { value } = e.currentTarget;
-  //     this.setState({
-  //       query: value
-  //     });
-  //   };
+
   handleSearch = (query: string) => {
     this.setState({ visible: true });
     const { getFiles } = this.props;
     getFiles(query);
   };
-  info = () => {
-    message.info("This is a normal message");
-  };
 
+  componentDidMount() {
+    // empty selected gist
+    const {
+      selectedGist: { files = [] } = {},
+      removeSelectedGist
+    } = this.props;
+    console.log("Did mount: ", files);
+    removeSelectedGist();
+  }
   componetDidUpdate() {
-    console.log("component update called");
     const { isLoading, selectedGist: { files = [] } = {} } = this.props;
-    const { visible } = this.state;
-    console.log("file", this.props);
-    if (files.length < 1 || visible) {
-      this.info();
-    }
     this.setState({ visible: false });
   }
   render() {
@@ -73,7 +69,7 @@ class SearchGists extends React.Component<SearchProps, SearchState> {
           />
 
           <Table
-          className="voffset1"
+            className="voffset1"
             columns={this.columns}
             rowKey="raw_url"
             expandedRowRender={record => (
@@ -86,22 +82,6 @@ class SearchGists extends React.Component<SearchProps, SearchState> {
     );
   }
 }
-type SearchProps = {
-  gistWithFiles: Array<GistWithFiles>;
-  isLoading: boolean;
-  selectedGist: GistWithFiles;
-
-  getFiles: (id: string) => void;
-};
-type SearchState = {
-  query: string;
-  visible: boolean;
-};
-type SearchStateProps = Pick<
-  SearchProps,
-  "gistWithFiles" | "isLoading" | "selectedGist"
->;
-type SearchDispatchProps = Pick<SearchProps, "getFiles">;
 function mapStateToProps(state: ApplicationState): SearchStateProps {
   const { gistWithFiles, isLoading, selectedGist } = state;
   return {
@@ -115,6 +95,9 @@ function mapDispatchToProps(dispatch: Dispatch<any>): SearchDispatchProps {
   return {
     getFiles: async (id: string) => {
       await dispatch(getFiles(id));
+    },
+    removeSelectedGist: async () => {
+      await dispatch(removeSelectedGist);
     }
   };
 }

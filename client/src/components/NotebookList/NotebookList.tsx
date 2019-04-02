@@ -12,6 +12,11 @@ import {
   editGist
 } from "../../action-creators/index";
 import { ApplicationState, Gist } from "../../application-state";
+import {
+  NoteBookStateProps,
+  NoteBookDispatchProps,
+  NotebookProps
+} from "../types";
 
 class NotebookList extends React.Component<NotebookProps, {}> {
   state = {
@@ -200,26 +205,6 @@ class NotebookList extends React.Component<NotebookProps, {}> {
     );
   }
 }
-//  all notebook props
-interface NotebookProps {
-  gists: Array<Gist>;
-  history: any;
-  isLoading: boolean;
-  updateGists: () => void;
-  deleteGist: (id: string) => void;
-  editGist: (id: string, dscription: string) => void;
-  createGist: (id: string) => void;
-}
-// get state and dispatch props from notebook props
-type NoteBookDispatchProps = Pick<
-  NotebookProps,
-  "updateGists" | "deleteGist" | "createGist" | "editGist"
->;
-type NoteBookStateProps = Pick<
-  NotebookProps,
-  "gists" | "history" | "isLoading"
->;
-
 function mapStateToProps(
   state: ApplicationState,
   ownProps: any

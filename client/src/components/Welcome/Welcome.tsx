@@ -13,6 +13,11 @@ import {
 } from "../../action-creators/index";
 import "./Welcome.css";
 import { auth } from "../utils/utils";
+import {
+  WelcomeDispatchProps,
+  WelcomeStateProps,
+  WelcomeProps
+} from "../types";
 
 class Welcome extends Component<WelcomeProps> {
   componentDidMount() {
@@ -77,21 +82,6 @@ class Welcome extends Component<WelcomeProps> {
     );
   }
 }
-
-export interface WelcomeProps {
-  history: any;
-  ownProps: any;
-  isLoading: boolean;
-  updateLocalStorage: (code: string) => void;
-  updateIsLoading: (isLoading: boolean) => void;
-  updateGists: () => void;
-}
-// pick
-type WelcomeStateProps = Pick<WelcomeProps, "ownProps" | "isLoading">;
-type WelcomeDispatchProps = Pick<
-  WelcomeProps,
-  "history" | "updateGists" | "updateLocalStorage" | "updateIsLoading"
->;
 
 function mapStateToProps(
   state: ApplicationState,

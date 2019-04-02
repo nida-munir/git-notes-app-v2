@@ -15,15 +15,13 @@ import {
 } from "../../action-creators/index";
 import { ApplicationState, Gist } from "../../application-state";
 import { GistWithFiles } from "./../../application-state";
+import {
+  FileDispatchProps,
+  FileStateProps,
+  FileProps,
+  FileState
+} from "../types";
 
-type FileState = {
-  fileName: string;
-  fileContent: string;
-  visible: boolean;
-  gistId: string;
-  oldFileName: string;
-  isEditMode: boolean;
-};
 class FilesList extends React.Component<FileProps, FileState> {
   state: FileState = {
     fileName: "",
@@ -167,30 +165,6 @@ class FilesList extends React.Component<FileProps, FileState> {
     );
   }
 }
-//  all notebook props
-interface FileProps {
-  location: any;
-  selectedGist: ApplicationState["selectedGist"];
-  isLoading: boolean;
-  gistWithFiles: Array<GistWithFiles>;
-  getFiles: (id: string) => void;
-  deleteFile: (id: string, fileName: string) => void;
-  updateIsLoading: (isLoading: boolean) => void;
-  editFile: (
-    id: string,
-    oldFileName: string,
-    updatedFileName: string,
-    fileContent: string
-  ) => void;
-}
-type FileStateProps = Pick<
-  FileProps,
-  "location" | "selectedGist" | "isLoading" | "gistWithFiles"
->;
-type FileDispatchProps = Pick<
-  FileProps,
-  "getFiles" | "deleteFile" | "updateIsLoading" | "editFile"
->;
 
 function mapStateToProps(
   state: ApplicationState,

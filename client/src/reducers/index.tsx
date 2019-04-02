@@ -1,5 +1,5 @@
-import * as Actions from "../action-creators/types";
 import * as ActionTypes from "../action-types/index";
+import * as Actions from "../action-creators/types";
 type Action =
   | Actions.UpdateLocalStorage
   | Actions.UpdateGistsAction
@@ -11,7 +11,8 @@ type Action =
   | Actions.UpdateIsLoadingAction
   | Actions.EditGistAction
   | Actions.UpdateSelectedGistAction
-  | Actions.EditFileAction;
+  | Actions.EditFileAction
+  | Actions.RemoveSelectedGist;
 import { ApplicationState, defaultState } from "../application-state";
 
 const updateState = (
@@ -28,6 +29,7 @@ const updateState = (
       };
     case ActionTypes.UPDATE_SELECTED_GIST:
       const { selectedGist: currentGist } = action;
+      console.log("Updating selected gist: ", currentGist);
       return {
         ...state,
         selectedGist: currentGist,

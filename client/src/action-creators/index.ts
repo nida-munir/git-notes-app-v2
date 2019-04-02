@@ -65,6 +65,15 @@ export function updateIsLoading(isLoading: boolean) {
     });
   };
 }
+export function removeSelectedGist() {
+  return (dispatch: Dispatch, getState: any) => {
+    console.log("Removng selected gist");
+    dispatch({
+      type: ActionTypes.UPDATE_SELECTED_GIST,
+      selectedGist: {}
+    });
+  };
+}
 
 export function updateGists() {
   const gitHubUser = getGitHubUserFromLocalStorage();

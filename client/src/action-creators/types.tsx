@@ -49,6 +49,10 @@ export type CreateGistAction = {
   type: ActionTypes.CREATE_GIST;
   gist: Gist;
 };
+export type RemoveSelectedGist = {
+  type: ActionTypes.UPDATE_SELECTED_GIST;
+  selectedGist: any;
+};
 export type EditGistAction = {
   type: ActionTypes.EDIT_GIST;
   gist: Gist;
