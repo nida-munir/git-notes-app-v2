@@ -59,12 +59,11 @@ app.post("/api/gists", (req, res) => {
       return res.status(400).json({ error: "Gists not found" });
     });
 });
+// get all files of a gist by gist id
 app.post("/api/files", (req, res) => {
-  // get gist name from body of the request
   const {
     body: { token, id }
   } = req;
-
   const gists = new Gists({
     token: token
   });
@@ -72,25 +71,26 @@ app.post("/api/files", (req, res) => {
   gists
     .get(id)
     .then(data => {
-      let gist = new Object();
-      gist.id = id;
-      gist.html_url = data.body.html_url;
-      gist.description = data.body.description;
+      const {
+        body: { html_url, description, files: notes }
+      } = data;
+      let gist = { id, html_url, description };
       let files = [];
-      for (var member in data.body.files) {
-        let file = new Object();
-        file.name = member;
-        file.content = data.body.files[member].content;
-        file.raw_url = data.body.files[member].raw_url;
+      for (var name in notes) {
+        const { content, raw_url } = notes[name];
+        let file = {
+          name,
+          content,
+          raw_url
+        };
         files.push(file);
       }
       gist.files = files;
-      // console.log("gist", gist);
       return res.send(gist);
     })
     .catch(err => {
+      console.log("Not Found", err);
       return res.status(400).json({ error: "Not found" });
-      console.log("Not Found");
     });
 });
 
