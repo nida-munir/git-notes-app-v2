@@ -8,9 +8,8 @@ const app = express();
 
 const port = process.env.PORT || 5000;
 
-// serves up the contents of the /views folder as static
-// app.use(express.static("views"));
 app.use(express.json());
+// add headers
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -20,14 +19,11 @@ app.use(function(req, res, next) {
   next();
 });
 
-// app.get("/", (req, res, next) => {
-//   res.sendFile(__dirname + "/index.html");
-// });
-
 app.listen(port, () => {
-  console.log("Server listening at port " + port);
+  console.log(">>> 🌎 Node Server is running at http://localhost:" + port);
 });
 
+// get all gists by username
 app.post("/api/gists", (req, res) => {
   const {
     body: { token, username }
@@ -35,7 +31,7 @@ app.post("/api/gists", (req, res) => {
   const gists = new Gists({
     token: token
   });
-  // GET /gists/
+
   gists
     .list(username)
     .then(response => {
@@ -43,13 +39,14 @@ app.post("/api/gists", (req, res) => {
 
       response.body.map(response => {
         const gist = new Object();
-        const files = [];
-        for (var member in response.files) {
-          files.push(member);
-        }
+        // const files = [];
+        // get files count, member == filename
+        // for (var member in response.files) {
+        //   files.push(member);
+        // }
         gist.id = response.id;
+        gist.filesCount = Object.keys(response.files).length;
         gist.description = response.description;
-        gist.filesCount = files.length;
         gist.public = response.public;
         gist.createdAt = response.created_at;
         gist.html_url = response.html_url;
@@ -57,8 +54,9 @@ app.post("/api/gists", (req, res) => {
       });
       return res.send(gists);
     })
-    .catch(function() {
-      console.log("Couldn't fetch gists.");
+    .catch(function(err) {
+      console.log("Couldn't fetch gists.", err);
+      return res.status(400).json({ error: "Gists not found" });
     });
 });
 app.post("/api/files", (req, res) => {

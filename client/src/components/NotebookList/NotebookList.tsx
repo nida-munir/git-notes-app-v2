@@ -190,7 +190,7 @@ class NotebookList extends React.Component<NotebookProps, {}> {
             </Modal>
           </div>
           <Table
-            className="your-table"
+            className="voffset1"
             columns={columns}
             dataSource={gists}
             rowKey="id"

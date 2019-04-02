@@ -18,3 +18,14 @@ code {
   /* margin-left: 20px; */
   margin-right: 5px;
 }
+.voffset1 {
+  margin-top: 10px;
+}
+
+.voffset2 {
+  margin-top: 15px;
+}
+
+.voffset3 {
+  margin-top: 20px;
+}

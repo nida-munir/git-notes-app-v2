@@ -73,6 +73,7 @@ class SearchGists extends React.Component<SearchProps, SearchState> {
           />
 
           <Table
+          className="voffset1"
             columns={this.columns}
             rowKey="raw_url"
             expandedRowRender={record => (

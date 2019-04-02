@@ -154,6 +154,7 @@ class FilesList extends React.Component<FileProps, FileState> {
             />
           </Modal>
           <Table
+            className="voffset1"
             columns={this.columns}
             expandedRowRender={record => (
               <p style={{ margin: 0 }}>{record.content}</p>

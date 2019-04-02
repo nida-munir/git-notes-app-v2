@@ -20,6 +20,9 @@ export const NavLinks = withRouter(({ history }) => {
         <Link to="/search">Search</Link>
       </li>
       <li>
+        <Link to="/notebooks">Notebooks</Link>
+      </li>
+      <li>
         <Link to="/" onClick={signOut}>
           Sign out
         </Link>
