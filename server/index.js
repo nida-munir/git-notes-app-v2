@@ -190,11 +190,9 @@ app.post("/api/editGist", (req, res) => {
 });
 
 app.post("/api/createGist", (req, res) => {
-  // get gist name from body of the request
   const {
     body: { token, name }
   } = req;
-  console.log("token: ", token);
   const gists = new Gists({
     token: token
   });
@@ -207,25 +205,25 @@ app.post("/api/createGist", (req, res) => {
       }
     }
   };
-  console.log(options);
   gists
     .create(options)
     .then(response => {
       const {
         body: { id, description, public, created_at, html_url, files }
       } = response;
-      console.log("Successfully created a new gist.");
-      const gist = new Object();
-      gist.id = id;
-      gist.description = description;
-      gist.public = public;
-      gist.createdAt = created_at;
-      gist.html_url = html_url;
-      gist.filesCount = Object.keys(files).length;
-      // ramda
+      const gist = {
+        id,
+        description,
+        public,
+        createdAt: created_at,
+        html_url,
+        filesCount: Object.keys(files).length
+      };
       return res.send(gist);
     })
-    .catch(console.error);
+    .catch(err => {
+      return res.status(400).json({ error: "Bad request." });
+    });
 });
 
 app.post("/api/getUser", (req, res) => {
