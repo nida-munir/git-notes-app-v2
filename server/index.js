@@ -149,14 +149,20 @@ app.post("/api/editFiles", (req, res) => {
   gists
     .edit(id, options)
     .then(response => {
-      console.log("Successfully edited a gist.");
+      const {
+        body: { files }
+      } = response;
+      const { filename: name, raw_url, content } = files[updatedFileName];
       const file = {
-        name: updatedFileName,
-        content: fileContent
+        name,
+        content,
+        raw_url
       };
+      console.log("Success!");
       return res.send(file);
     })
     .catch(err => {
+      console.log(err);
       return res.status(404).json({ error: "Bad request." });
     });
 });

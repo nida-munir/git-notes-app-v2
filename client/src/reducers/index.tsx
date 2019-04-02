@@ -1,8 +1,6 @@
-import * as Actions from "../action-creators/index";
+import * as Actions from "../action-creators/types";
 import * as ActionTypes from "../action-types/index";
 type Action =
-  | Actions.UpdateGreetingAction
-  | Actions.IncrementAction
   | Actions.UpdateLocalStorage
   | Actions.UpdateGistsAction
   | Actions.DeleteGistAction
@@ -15,17 +13,12 @@ type Action =
   | Actions.UpdateSelectedGistAction
   | Actions.EditFileAction;
 import { ApplicationState, defaultState } from "../application-state";
-import { GistWithFiles } from "./../application-state";
 
 const updateState = (
   state: ApplicationState = defaultState,
   action: Action
 ) => {
   switch (action.type) {
-    case ActionTypes.UPDATE_GREETING:
-      return {
-        ...state
-      };
     case ActionTypes.UPDATE_IS_AUTHENTICATED:
       const { isAuthenticated } = action;
       return {
@@ -34,7 +27,6 @@ const updateState = (
         isLoading: false
       };
     case ActionTypes.UPDATE_SELECTED_GIST:
-      console.log("updating selected gist, ", action.selectedGist);
       const { selectedGist: currentGist } = action;
       return {
         ...state,
@@ -44,7 +36,6 @@ const updateState = (
 
     case ActionTypes.UPDATE_IS_LOADING:
       const { isLoading } = action;
-      console.log("prev state", state.isLoading + " " + isLoading);
       return {
         ...state,
         isLoading
@@ -82,11 +73,13 @@ const updateState = (
         isLoading: false
       };
     case ActionTypes.EDIT_GIST:
-      const { gist: editedGist } = action;
+      const {
+        gist: { id: editedGistId, description }
+      } = action;
       const gistsCopy = state.gists.slice(); // Create local copy to change.
       gistsCopy.forEach(g => {
-        if (g.id === editedGist.id) {
-          g.description = editedGist.description;
+        if (g.id === editedGistId) {
+          g.description = description;
         }
       });
       return {
@@ -96,11 +89,8 @@ const updateState = (
       };
     case ActionTypes.GET_FILES:
       const { selectedGist } = action;
-      // const { gists } = state;
-      // update gist with files
       const { gistWithFiles } = state;
       const updatedGistWithFiles = [...gistWithFiles, selectedGist];
-      console.log(updatedGistWithFiles);
       return {
         ...state,
         selectedGist,
@@ -109,8 +99,9 @@ const updateState = (
       };
     case ActionTypes.DELETE_FILE:
       const { fileName } = action;
-      // const { gists } = state;
-      const { files = [] } = state.selectedGist;
+      const {
+        selectedGist: { files = [] }
+      } = state;
       const filteredFiles = files.filter(f => f.name !== fileName);
       const { selectedGist: updatedGist } = state;
       updatedGist.files = filteredFiles;
@@ -120,16 +111,15 @@ const updateState = (
         isLoading: false
       };
     case ActionTypes.EDIT_FILE:
-      const { data } = action;
-      const gistsWithFilesCopy = state.gistWithFiles.slice(); // Create local copy to change.
+      const {
+        data: { id: idToEdit, oldFileName, file }
+      } = action;
+      const gistsWithFilesCopy = state.gistWithFiles.slice();
       gistsWithFilesCopy.forEach(g => {
-        if (g.id === data.id) {
-          //
-          const index = g.files.findIndex(f => f.raw_url == data.file.raw_url);
-          g.files = g.files.filter(f => f.raw_url != data.file.raw_url);
-          console.log("Filtered files", g.files);
-          g.files = [data.file, ...g.files];
-          console.log("updated files", g.files);
+        const { id, files } = g;
+        if (id === idToEdit) {
+          const index = files.findIndex(f => f.name == oldFileName);
+          files[index] = file;
         }
       });
       return {

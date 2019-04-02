@@ -3,89 +3,15 @@ import { Dispatch } from "redux";
 import axios from "axios";
 // src
 import * as ActionTypes from "../action-types/index";
-import {
-  ApplicationState,
-  Gist,
-  GistWithFiles,
-  File
-} from "../application-state";
+import { GistWithFiles } from "../application-state";
 
 const apiUrl = "http://localhost:5000/api";
-export type UpdateGreetingAction = {
-  type: ActionTypes.UPDATE_GREETING;
-  greeting: string;
-};
 
-export type UpdateLocalStorage = {
-  type: ActionTypes.UPDATE_LOCAL_STORAGE;
-  user: { username: string; avatar: string; token: string };
-};
-export type UpdateIsAuthenticatedAction = {
-  type: ActionTypes.UPDATE_IS_AUTHENTICATED;
-  isAuthenticated: boolean;
-};
-export type UpdateGistsAction = {
-  type: ActionTypes.UPDATE_GISTS;
-  gists: [];
-};
-
-export type DeleteGistAction = {
-  type: ActionTypes.DELETE_GIST;
-  id: string;
-};
-export type UpdateSelectedGistAction = {
-  type: ActionTypes.UPDATE_SELECTED_GIST;
-  selectedGist: GistWithFiles;
-};
-export type DeleteFileAction = {
-  type: ActionTypes.DELETE_FILE;
-  fileName: string;
-};
-export type GetFilesAction = {
-  type: ActionTypes.GET_FILES;
-  selectedGist: ApplicationState["selectedGist"];
-};
-
-export type CreateGistAction = {
-  type: ActionTypes.CREATE_GIST;
-  gist: Gist;
-};
-export type EditGistAction = {
-  type: ActionTypes.EDIT_GIST;
-  gist: Gist;
-};
-export type EditFileAction = {
-  type: ActionTypes.EDIT_FILE;
-  data: { id: string; file: File };
-};
-
-export type IncrementAction = {
-  type: ActionTypes.INCREMENT;
-};
-export type UpdateIsLoadingAction = {
-  type: ActionTypes.UPDATE_IS_LOADING;
-  isLoading: boolean;
-};
 function getGitHubUserFromLocalStorage() {
   const localStorageItem = localStorage.getItem("gitHubUser") || "";
   const gitHubUser = JSON.parse(localStorageItem);
   return gitHubUser;
 }
-// define return type in reducer by exporting above actions, move this to another file
-
-// export type updateGreeting = typeof updateGreeting;
-// export type updateIsLoading = typeof updateIsLoading;
-// export type increment = typeof increment;
-// export type updateLocalStorage = typeof updateLocalStorage;
-// export type updateGists = typeof updateGists;
-// export type deleteGist = typeof deleteGist;
-// export type editGist = typeof editGist;
-// export type createGist = typeof createGist;
-
-export function updateGreeting(name: string) {
-  return (dispatch: Dispatch, getState: any) => {};
-}
-
 export function updateLocalStorage(code: string) {
   return (dispatch: Dispatch, getState: any) => {
     dispatch({
@@ -97,7 +23,7 @@ export function updateLocalStorage(code: string) {
         return data.json();
       })
       .then(function(res) {
-        const { token } = res;
+        const { token = "" } = res;
         const options = {
           token
         };
@@ -131,11 +57,6 @@ export function updateLocalStorage(code: string) {
   };
 }
 
-export function increment(): IncrementAction {
-  return {
-    type: ActionTypes.INCREMENT
-  };
-}
 export function updateIsLoading(isLoading: boolean) {
   return (dispatch: Dispatch, getState: any) => {
     dispatch({
@@ -161,14 +82,14 @@ export function updateGists() {
     axios
       .post(`${apiUrl}/gists`, options)
       .then(function(response) {
-        console.log("posting to /gists - Success!");
+        console.log("httppost to /gists - Success!");
         dispatch({
           type: ActionTypes.UPDATE_GISTS,
           gists: response.data
         });
       })
       .catch(function(error) {
-        console.log("Error while getting gists", error);
+        console.log("Gists not found.", error);
       });
   };
 }
@@ -177,7 +98,7 @@ export function deleteGist(id: string) {
   const gitHubUser = getGitHubUserFromLocalStorage();
 
   return (dispatch: Dispatch, getState: any) => {
-    const { token } = gitHubUser;
+    const { token = "" } = gitHubUser;
     const options = {
       token,
       id
@@ -197,7 +118,7 @@ export function deleteGist(id: string) {
         });
       })
       .catch(function(error) {
-        console.log("Error while getting gist", error);
+        console.log("Error - ", error);
       });
   };
 }
@@ -205,7 +126,7 @@ export function deleteGist(id: string) {
 export function deleteFile(id: string, fileName: string) {
   return (dispatch: Dispatch, getState: any) => {
     const gitHubUser = getGitHubUserFromLocalStorage();
-    const { token } = gitHubUser;
+    const { token = "" } = gitHubUser;
     const options = {
       token,
       id,
@@ -214,19 +135,15 @@ export function deleteFile(id: string, fileName: string) {
     axios
       .post(`${apiUrl}/deleteFile`, options)
       .then(function(response) {
-        console.log("File deleted successfully, id = ", response.data);
-        const { data: id } = response;
+        console.log("File deleted successfully");
+        const { data: fileName } = response;
         dispatch({
           type: ActionTypes.DELETE_FILE,
-          id
-        });
-        dispatch({
-          type: ActionTypes.UPDATE_IS_LOADING,
-          isLoading: false
+          fileName
         });
       })
       .catch(function(error) {
-        console.log("Error while deleting file", error);
+        console.log("Error - ", error);
       });
   };
 }
@@ -238,7 +155,7 @@ export function editFile(
 ) {
   return (dispatch: Dispatch, getState: any) => {
     const gitHubUser = getGitHubUserFromLocalStorage();
-    const { token } = gitHubUser;
+    const { token = "" } = gitHubUser;
     const options = {
       token,
       id,
@@ -246,24 +163,20 @@ export function editFile(
       updatedFileName,
       fileContent
     };
-    console.log("Options sendng to api, ", options);
     axios
       .post(`${apiUrl}/editFiles`, options)
       .then(function(response) {
-        console.log("File edited successfully", response.data);
+        console.log("File edited successfully");
         const { data: file } = response;
         const data = {
           id,
-          file
+          file,
+          oldFileName
         };
         dispatch({
           type: ActionTypes.EDIT_FILE,
           data
         });
-        // dispatch({
-        //   type: ActionTypes.UPDATE_IS_LOADING,
-        //   isLoading: false
-        // });
       })
       .catch(function(error) {
         console.log("Error while editing file", error);
@@ -274,7 +187,7 @@ export function editFile(
 export function editGist(id: string, description: string) {
   return (dispatch: Dispatch, getState: any) => {
     const gitHubUser = getGitHubUserFromLocalStorage();
-    const { token } = gitHubUser;
+    const { token = "" } = gitHubUser;
     const options = {
       token,
       id,
@@ -331,9 +244,9 @@ export function createGist(name: string) {
 export function getFiles(id: string) {
   return (dispatch: Dispatch, getState: any) => {
     const { gistWithFiles = [] } = getState();
-    console.log("Checking if files are in store", gistWithFiles);
+    console.log("Checking if files are in store.");
     const selectedGist = gistWithFiles.find((g: GistWithFiles) => g.id == id);
-
+    // show gist from store, if exists and return
     if (selectedGist) {
       dispatch({
         type: ActionTypes.UPDATE_SELECTED_GIST,
@@ -341,30 +254,30 @@ export function getFiles(id: string) {
       });
       return;
     }
-
+    // Get gist from API
     dispatch({
       type: ActionTypes.UPDATE_IS_LOADING,
       isLoading: true
     });
+
     const gitHubUser = getGitHubUserFromLocalStorage();
     const { token } = gitHubUser;
     const options = {
       token: token,
       id: id
     };
-    console.log("Searching gist by id..");
+    console.log("Searching...");
     axios
       .post(`${apiUrl}/files`, options)
       .then(function(response) {
         const { data: selectedGist } = response;
-        console.log("Successfully loaded all files.", response);
         dispatch({
           type: ActionTypes.GET_FILES,
           selectedGist
         });
       })
       .catch(function(error) {
-        console.log("Gist not found.");
+        console.log("Gist not found.", error);
         dispatch({
           type: ActionTypes.UPDATE_SELECTED_GIST,
           selectedGist: {}
