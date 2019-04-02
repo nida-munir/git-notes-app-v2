@@ -166,7 +166,7 @@ app.post("/api/editFiles", (req, res) => {
     })
     .catch(console.error);
 });
-
+// Edit a gist name (description)
 app.post("/api/editGist", (req, res) => {
   const {
     body: { token, id, description }
@@ -174,17 +174,19 @@ app.post("/api/editGist", (req, res) => {
   const gists = new Gists({
     token: token
   });
+  // Send updated description/name in options
   const options = {
-    // files: { [fileName]: null }
     description
   };
   gists
     .edit(id, options)
-    .then(r => {
-      console.log("Successfully updated gist.");
+    .then(response => {
+      // Send updated gist id
       return res.send(id);
     })
-    .catch(console.error);
+    .catch(err => {
+      return res.status(404).json({ error: "Gist name couldn't be updated." });
+    });
 });
 
 app.post("/api/createGist", (req, res) => {
