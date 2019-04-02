@@ -11,10 +11,9 @@ export const auth = {
       return false;
     }
   },
-  getUserName() {
+  getUser() {
     const localStorageItem = localStorage.getItem("gitHubUser") || "";
 
-    const gitHubUser = JSON.parse(localStorageItem);
-    return gitHubUser.username;
+    return JSON.parse(localStorageItem);
   }
 };

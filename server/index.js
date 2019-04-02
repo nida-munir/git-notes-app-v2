@@ -51,7 +51,7 @@ app.post("/api/gists", (req, res) => {
           public,
           createdAt,
           html_url,
-          filesCount: files.length
+          filesCount: Object.keys(files).length
         };
         gists.push(gist);
       });
@@ -143,7 +143,6 @@ app.post("/api/editFiles", (req, res) => {
   const gists = new Gists({
     token: token
   });
-  console.log("req body...", req.body);
   const options = {
     files: {
       [oldFileName]: {
@@ -152,19 +151,19 @@ app.post("/api/editFiles", (req, res) => {
       }
     }
   };
-  console.log("options: ", options);
   gists
     .edit(id, options)
     .then(response => {
       console.log("Successfully edited a gist.");
       const file = {
         name: updatedFileName,
-        content: fileContent,
-        raw_url: ""
+        content: fileContent
       };
       return res.send(file);
     })
-    .catch(console.error);
+    .catch(err => {
+      return res.status(404).json({ error: "Bad request." });
+    });
 });
 // Edit a gist name (description)
 app.post("/api/editGist", (req, res) => {
@@ -234,13 +233,15 @@ app.post("/api/getUser", (req, res) => {
   axios
     .get(url)
     .then(function(response) {
-      const { login, avatar_url } = response.data;
+      const {
+        data: { login, avatar_url }
+      } = response;
       return res.send({
         username: login,
         avatar_url
       });
     })
-    .catch(function(err) {
-      console.log("Couldn't fetch user profile.", err);
+    .catch(err => {
+      return res.status(404).json({ error: "Bad request." });
     });
 });

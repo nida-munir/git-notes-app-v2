@@ -14,7 +14,10 @@ export const NavLinks = withRouter(({ history }) => {
   return auth.isSignedIn() ? (
     <ul id="nav-mobile" className="right hide-on-med-and-down">
       <li>
-        <a href="#"> Welcome {auth.getUserName()}!</a>
+        <img src={auth.getUser().avatar_url} id="avatar" />
+      </li>
+      <li>
+        <a href="#"> Welcome {auth.getUser().username}!</a>
       </li>
       <li>
         <Link to="/search">Search</Link>
@@ -31,7 +34,7 @@ export const NavLinks = withRouter(({ history }) => {
   ) : (
     <ul id="nav-mobile" className="right hide-on-med-and-down">
       <li>
-        <Link to="/">Welcome to GitNotes</Link>
+        <Link to="/">Welcome - Sign in to continue</Link>
       </li>
     </ul>
   );
