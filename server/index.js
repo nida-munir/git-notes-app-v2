@@ -36,27 +36,30 @@ app.post("/api/gists", (req, res) => {
     .list(username)
     .then(response => {
       let gists = [];
-
       response.body.map(response => {
-        const gist = new Object();
-        // const files = [];
-        // get files count, member == filename
-        // for (var member in response.files) {
-        //   files.push(member);
-        // }
-        gist.id = response.id;
-        gist.filesCount = Object.keys(response.files).length;
-        gist.description = response.description;
-        gist.public = response.public;
-        gist.createdAt = response.created_at;
-        gist.html_url = response.html_url;
+        const {
+          id,
+          description,
+          public,
+          createdAt,
+          html_url,
+          files
+        } = response;
+        const gist = {
+          id,
+          description,
+          public,
+          createdAt,
+          html_url,
+          filesCount: files.length
+        };
         gists.push(gist);
       });
       return res.send(gists);
     })
     .catch(function(err) {
       console.log("Couldn't fetch gists.", err);
-      return res.status(400).json({ error: "Gists not found" });
+      return res.status(404).json({ error: "Gists not found" });
     });
 });
 // get all files of a gist by gist id
@@ -90,7 +93,7 @@ app.post("/api/files", (req, res) => {
     })
     .catch(err => {
       console.log("Not Found", err);
-      return res.status(400).json({ error: "Not found" });
+      return res.status(404).json({ error: "Not found" });
     });
 });
 
