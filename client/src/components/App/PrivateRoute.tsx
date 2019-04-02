@@ -2,7 +2,7 @@
 import React from "react";
 // src
 import { Route, Redirect } from "react-router-dom";
-import { auth } from "../Navbar/utils";
+import { auth } from "../utils/utils";
 
 export const PrivateRoute = (props: any) => {
   const { component: Component } = props;

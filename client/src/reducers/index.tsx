@@ -30,7 +30,8 @@ const updateState = (
       const { isAuthenticated } = action;
       return {
         ...state,
-        isAuthenticated
+        isAuthenticated,
+        isLoading: false
       };
     case ActionTypes.UPDATE_SELECTED_GIST:
       console.log("updating selected gist, ", action.selectedGist);
@@ -52,7 +53,8 @@ const updateState = (
     case ActionTypes.UPDATE_GISTS:
       return {
         ...state,
-        gists: action.gists
+        gists: action.gists,
+        isLoading: false
       };
     case ActionTypes.UPDATE_LOCAL_STORAGE:
       const { username, avatar, token } = action.user;
@@ -68,14 +70,16 @@ const updateState = (
       const { gists } = state;
       return {
         ...state,
-        gists: gists.filter(g => g.id !== id)
+        gists: gists.filter(g => g.id !== id),
+        isLoading: false
       };
 
     case ActionTypes.CREATE_GIST:
       const { gist } = action;
       return {
         ...state,
-        gists: [gist, ...state.gists]
+        gists: [gist, ...state.gists],
+        isLoading: false
       };
     case ActionTypes.EDIT_GIST:
       const { gist: editedGist } = action;
@@ -87,7 +91,8 @@ const updateState = (
       });
       return {
         ...state,
-        gists: gistsCopy
+        gists: gistsCopy,
+        isLoading: false
       };
     case ActionTypes.GET_FILES:
       const { selectedGist } = action;
@@ -111,7 +116,8 @@ const updateState = (
       updatedGist.files = filteredFiles;
       return {
         ...state,
-        selectedGist: updatedGist
+        selectedGist: updatedGist,
+        isLoading: false
       };
     case ActionTypes.EDIT_FILE:
       const { data } = action;

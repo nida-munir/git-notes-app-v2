@@ -9,7 +9,6 @@ import {
   updateGists,
   deleteGist,
   createGist,
-  updateIsLoading,
   editGist
 } from "../../action-creators/index";
 import { ApplicationState, Gist } from "../../application-state";
@@ -33,9 +32,8 @@ class NotebookList extends React.Component<NotebookProps, {}> {
     });
   };
   handleGistCreation = () => {
-    const { createGist, updateIsLoading, editGist } = this.props;
+    const { createGist, editGist } = this.props;
     const { userInput, isEditMode, gistId } = this.state;
-    updateIsLoading(true);
     isEditMode ? editGist(gistId, userInput) : createGist(userInput);
     this.setState({
       visible: false,
@@ -109,14 +107,13 @@ class NotebookList extends React.Component<NotebookProps, {}> {
     });
   };
   // replace any with gist
-  handleDelete = (gist: any) => {
+  handleDelete = (gist: Gist) => {
     const confirm = Modal.confirm;
-    const { deleteGist, updateIsLoading } = this.props;
+    const { deleteGist } = this.props;
     confirm({
       title: `Delete gist ${gist.description}?`,
       content: "Are you sure you want to delete this gist?",
       onOk() {
-        updateIsLoading(true);
         deleteGist(gist.id);
       }
     });
@@ -129,23 +126,25 @@ class NotebookList extends React.Component<NotebookProps, {}> {
     });
   };
 
-  handleNameClick = (record: any) => {
+  handleNameClick = (record: Gist) => {
     this.props.history.push({
       pathname: "/files",
       search: `?gistId=${record.id}`
     });
   };
   componentDidMount() {
-    // const { updateGists, updateIsLoading } = this.props;
+    // update gists if store is empty
+    const { updateGists, gists } = this.props;
     // // get updated gists
-    // updateIsLoading(true);
-    // updateGists();
+    if (gists.length === 0) {
+      console.log("Gists are empty");
+      updateGists();
+    }
   }
 
   refresh = () => {
-    const { updateGists, updateIsLoading } = this.props;
+    const { updateGists } = this.props;
     // get updated gists
-    updateIsLoading(true);
     updateGists();
   };
   public render() {
@@ -209,13 +208,12 @@ interface NotebookProps {
   updateGists: () => void;
   deleteGist: (id: string) => void;
   editGist: (id: string, dscription: string) => void;
-  updateIsLoading: (isLoading: boolean) => void;
   createGist: (id: string) => void;
 }
 // get state and dispatch props from notebook props
 type NoteBookDispatchProps = Pick<
   NotebookProps,
-  "updateGists" | "deleteGist" | "createGist" | "updateIsLoading" | "editGist"
+  "updateGists" | "deleteGist" | "createGist" | "editGist"
 >;
 type NoteBookStateProps = Pick<
   NotebookProps,
@@ -245,9 +243,7 @@ function mapDispatchToProps(dispatch: Dispatch<any>): NoteBookDispatchProps {
     createGist: async (name: string) => {
       await dispatch(createGist(name));
     },
-    updateIsLoading: async (isLoading: boolean) => {
-      await dispatch(updateIsLoading(isLoading));
-    },
+
     editGist: async (id: string, description: string) => {
       await dispatch(editGist(id, description));
     }

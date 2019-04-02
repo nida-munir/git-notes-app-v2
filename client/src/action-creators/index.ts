@@ -88,6 +88,10 @@ export function updateGreeting(name: string) {
 
 export function updateLocalStorage(code: string) {
   return (dispatch: Dispatch, getState: any) => {
+    dispatch({
+      type: ActionTypes.UPDATE_IS_LOADING,
+      isLoading: true
+    });
     fetch("http://localhost:9999/authenticate/" + code)
       .then(function(data) {
         return data.json();
@@ -116,10 +120,6 @@ export function updateLocalStorage(code: string) {
             });
             // update is loading to false
             console.log("Login Success!");
-            dispatch({
-              type: ActionTypes.UPDATE_IS_LOADING,
-              isLoading: false
-            });
           })
           .catch(function(error) {
             console.log("Error while getting user profile", error);
@@ -150,6 +150,10 @@ export function updateGists() {
   return (dispatch: Dispatch, getState: any) => {
     // post to api to get all gists of a user
     const { token = "", username = "" } = gitHubUser;
+    dispatch({
+      type: ActionTypes.UPDATE_IS_LOADING,
+      isLoading: true
+    });
     const options = {
       token,
       username
@@ -161,10 +165,6 @@ export function updateGists() {
         dispatch({
           type: ActionTypes.UPDATE_GISTS,
           gists: response.data
-        });
-        dispatch({
-          type: ActionTypes.UPDATE_IS_LOADING,
-          isLoading: false
         });
       })
       .catch(function(error) {
@@ -182,6 +182,10 @@ export function deleteGist(id: string) {
       token,
       id
     };
+    dispatch({
+      type: ActionTypes.UPDATE_IS_LOADING,
+      isLoading: true
+    });
     axios
       .post(`${apiUrl}/deleteGist`, options)
       .then(function(response) {
@@ -190,10 +194,6 @@ export function deleteGist(id: string) {
         dispatch({
           type: ActionTypes.DELETE_GIST,
           id
-        });
-        dispatch({
-          type: ActionTypes.UPDATE_IS_LOADING,
-          isLoading: false
         });
       })
       .catch(function(error) {
@@ -280,6 +280,10 @@ export function editGist(id: string, description: string) {
       id,
       description
     };
+    dispatch({
+      type: ActionTypes.UPDATE_IS_LOADING,
+      isLoading: true
+    });
     axios
       .post(`${apiUrl}/editGist`, options)
       .then(function(response) {
@@ -288,10 +292,6 @@ export function editGist(id: string, description: string) {
         dispatch({
           type: ActionTypes.EDIT_GIST,
           gist
-        });
-        dispatch({
-          type: ActionTypes.UPDATE_IS_LOADING,
-          isLoading: false
         });
       })
       .catch(function(error) {
@@ -308,6 +308,10 @@ export function createGist(name: string) {
       token,
       name
     };
+    dispatch({
+      type: ActionTypes.UPDATE_IS_LOADING,
+      isLoading: true
+    });
     axios
       .post(`${apiUrl}/createGist`, options)
       .then(function(response) {
@@ -316,10 +320,6 @@ export function createGist(name: string) {
         dispatch({
           type: ActionTypes.CREATE_GIST,
           gist: data
-        });
-        dispatch({
-          type: ActionTypes.UPDATE_IS_LOADING,
-          isLoading: false
         });
       })
       .catch(function(error) {

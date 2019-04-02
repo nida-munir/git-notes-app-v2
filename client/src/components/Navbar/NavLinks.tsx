@@ -1,6 +1,6 @@
 import { withRouter, Link } from "react-router-dom";
 import React from "react";
-import { auth } from "./utils";
+import { auth } from "../utils/utils";
 export const NavLinks = withRouter(({ history }) => {
   const signOut = () => {
     console.log("Signing out!");

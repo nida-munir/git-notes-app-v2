@@ -36,15 +36,8 @@ app.post("/api/gists", (req, res) => {
     .list(username)
     .then(response => {
       let gists = [];
-      response.body.map(response => {
-        const {
-          id,
-          description,
-          public,
-          createdAt,
-          html_url,
-          files
-        } = response;
+      response.body.map(r => {
+        const { id, description, public, createdAt, html_url, files } = r;
         const gist = {
           id,
           description,
@@ -53,6 +46,8 @@ app.post("/api/gists", (req, res) => {
           html_url,
           filesCount: Object.keys(files).length
         };
+        console.log("r", r);
+        console.log("length", Object.keys(files).length);
         gists.push(gist);
       });
       return res.send(gists);

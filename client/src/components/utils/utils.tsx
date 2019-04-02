@@ -13,7 +13,6 @@ export const auth = {
   },
   getUser() {
     const localStorageItem = localStorage.getItem("gitHubUser") || "";
-
     return JSON.parse(localStorageItem);
   }
 };

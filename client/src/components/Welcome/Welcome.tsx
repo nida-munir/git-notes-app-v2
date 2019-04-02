@@ -12,33 +12,28 @@ import {
   updateGists
 } from "../../action-creators/index";
 import "./Welcome.css";
+import { auth } from "../utils/utils";
 
 class Welcome extends Component<WelcomeProps> {
   componentDidMount() {
+    // when user goes to localhost:3000/, then
     // if user is authenticated, navigate to notebooks page
-    const localStorageItem = localStorage.getItem("gitHubUser") || "";
-    const { isAuthenticated } = JSON.parse(localStorageItem);
-    if (isAuthenticated) {
+    if (auth.isSignedIn()) {
       const { updateGists, updateIsLoading } = this.props;
-      // get updated gists
-      updateIsLoading(true);
       updateGists();
       this.props.history.push("/notebooks");
     }
   }
   componentDidUpdate() {
     // if user is authenticated, navigate to notebooks page
-    // component did update is called when the compoenent is rerendered after signing in
-    const localStorageItem = localStorage.getItem("gitHubUser") || "";
-    const { isAuthenticated } = JSON.parse(localStorageItem);
-    if (isAuthenticated) {
+    // this is called when the compoenent is rerendered after signing in
+    if (auth.isSignedIn()) {
       this.props.history.push("/notebooks");
     }
   }
   // please disable popup blocker
   onSuccess = (response: any) => {
     const { updateIsLoading } = this.props;
-    updateIsLoading(true);
     // dispatch action is loading
     const { code } = response;
     const { updateLocalStorage } = this.props;
@@ -69,7 +64,12 @@ class Welcome extends Component<WelcomeProps> {
             scope="user,gist"
           />
           <br />
-          <Button type="primary" icon="search" onClick={this.handleSearch}>
+          <Button
+            className="voffset1"
+            type="primary"
+            icon="search"
+            onClick={this.handleSearch}
+          >
             Search Gists
           </Button>
         </Spin>
