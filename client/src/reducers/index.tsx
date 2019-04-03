@@ -1,3 +1,4 @@
+// TODO: Always extract variables where needed
 // src
 import * as ActionTypes from "../action-types/index";
 import * as Actions from "../action-creators/types";
@@ -30,12 +31,9 @@ const updateState = (
   switch (action.type) {
     case ActionTypes.DELETE_FILE:
       const { fileName } = action;
-      // TODO: Always extract variables where needed
-      const selectedGistCopy = state.selectedGist;
-      const filteredFiles = files.filter(f => f.name !== fileName);
-      selectedGistCopy.files = filteredFiles;
-      // selectedGist.files.filter(f => f.name !== fileName);
-      console.log("Updated gist object with files: ", selectedGistCopy);
+      const selectedGistCopy = { ...mySelectedGist };
+      selectedGistCopy.files = files.filter(f => f.name !== fileName);
+      message.success("File deleted!");
       return {
         ...state,
         selectedGist: selectedGistCopy,

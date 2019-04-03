@@ -145,7 +145,6 @@ class FilesList extends React.Component<FileProps, FileState> {
               value={fileName}
             />
             <br />
-            <br />
             <TextArea
               placeholder="Content"
               id="fileContent"
