@@ -30,7 +30,11 @@ export const Navbar = withRouter(({ history }) => {
         >
           <Menu.Item key="2">
             <a href="#">
-              <img src={auth.getUser().avatar_url} id="avatar" />
+              <img
+                src={auth.getUser().avatar_url}
+                id="avatar"
+                className="hoffset"
+              />
               {"    "}
               {auth.getUser().username}!
             </a>

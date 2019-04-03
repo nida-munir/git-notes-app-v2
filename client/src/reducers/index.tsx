@@ -45,14 +45,20 @@ const updateState = (
       } = action;
       const gistsWithFilesCopy = gistWithFiles.slice();
       gistsWithFilesCopy.forEach(g => {
-        const { id, files } = g;
+        let { id, files } = g;
         if (id === idToEdit) {
           const index = files.findIndex(f => f.name == oldFileName);
-          files[index] = file;
+
+          if (index < 0) {
+            const filesCopy = [file, ...files];
+            g.files = filesCopy;
+            message.success("File added!");
+          } else {
+            files[index] = file;
+            message.success("File updated!");
+          }
         }
       });
-      message.success("File updated!");
-
       return {
         ...state,
         isLoading: false,

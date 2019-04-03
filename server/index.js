@@ -149,6 +149,7 @@ app.post("/api/editFiles", (req, res) => {
   gists
     .edit(id, options)
     .then(response => {
+      console.log(response.body);
       const {
         body: { files }
       } = response;
@@ -230,6 +231,7 @@ app.post("/api/getUser", (req, res) => {
   const {
     body: { token = "" }
   } = req;
+  console.log("token", token);
   const url = `https://api.github.com/user?access_token=${token}`;
   axios
     .get(url)
@@ -243,6 +245,7 @@ app.post("/api/getUser", (req, res) => {
       });
     })
     .catch(err => {
+      // console.log(err);
       return res.status(404).json({ error: "Bad request." });
     });
 });

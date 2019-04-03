@@ -5,9 +5,8 @@ html {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 100%;
-
   /* overflow-x: hidden; */
+  color: #2ebc4f;
 }
 
 code {
@@ -19,7 +18,7 @@ code {
   margin-right: 5px;
 }
 .voffset1 {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .voffset2 {

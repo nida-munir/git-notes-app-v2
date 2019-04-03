@@ -8,6 +8,32 @@ import * as ActionTypes from "../action-types/index";
 import { GistWithFiles } from "../application-state";
 
 const apiUrl = "http://localhost:5000/api";
+// Add a request interceptor
+axios.interceptors.request.use(
+  function(config) {
+    // Do something before request is sent
+    config.data.token = getGitHubUserFromLocalStorage().token;
+    config.data.username = getGitHubUserFromLocalStorage().username;
+    console.log(config.data);
+    return config;
+  },
+  function(error) {
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
+// Add a response interceptor
+axios.interceptors.response.use(
+  function(response) {
+    console.log("Response OK");
+    return response;
+  },
+  function(error) {
+    if (error.response.status >= 400)
+      console.log("Logging the error ", error.response.status);
+    return;
+  }
+);
 
 function getGitHubUserFromLocalStorage() {
   const localStorageItem = localStorage.getItem("gitHubUser") || "";
@@ -29,10 +55,21 @@ export function updateLocalStorage(code: string) {
         const options = {
           token
         };
-        axios
-          .post(`${apiUrl}/getuser`, options)
+        console.log("Options,", options);
+        fetch(`${apiUrl}/getuser`, {
+          method: "post",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(options)
+        })
           .then(function(response) {
-            const { username, avatar_url } = response.data;
+            return response.json();
+          })
+          .then(function(response) {
+            console.log("response", response);
+            const { username, avatar_url } = response;
             // update local storage
             var gitHubUser = {
               token,
@@ -48,10 +85,33 @@ export function updateLocalStorage(code: string) {
             });
             console.log("Login Success!");
           })
-          .catch(function(error) {
+          .catch(err => {
             message.error("Couldn't get user profile.");
-            console.log("Error while getting user profile.", error);
+            console.log("Error while getting user profile.", err);
           });
+        // axios
+        //   .post(`${apiUrl}/getuser`, options)
+        //   .then(function(response) {
+        // const { username, avatar_url } = response.data;
+        // // update local storage
+        // var gitHubUser = {
+        //   token,
+        //   username,
+        //   avatar_url,
+        //   isAuthenticated: true
+        // };
+        // localStorage.setItem("gitHubUser", JSON.stringify(gitHubUser));
+        // // update is Authenticated in store
+        // dispatch({
+        //   type: ActionTypes.UPDATE_IS_AUTHENTICATED,
+        //   isAuthenticated: true
+        // });
+        // console.log("Login Success!");
+        // })
+        // .catch(function(error) {
+        //   message.error("Couldn't get user profile.");
+        //   console.log("Error while getting user profile.", error);
+        // });
       })
       .catch(function(err) {
         message.error("Couldn't get access token. Login failed.");
@@ -85,13 +145,13 @@ export function updateGists() {
       isLoading: true
     });
     // post to api to get all gists of a user
-    const { token = "", username = "" } = gitHubUser;
-    const options = {
-      token,
-      username
-    };
+    // const { token = "", username = "" } = gitHubUser;
+    // const options = {
+    //   token,
+    //   username
+    // };
     axios
-      .post(`${apiUrl}/gists`, options)
+      .post(`${apiUrl}/gists`, {})
       .then(function(response) {
         console.log("Gists fetch successful!");
         dispatch({
@@ -192,6 +252,7 @@ export function editFile(
         });
       })
       .catch(function(error) {
+        console.log("Error", error);
         message.error(`Couldn't edit file ${oldFileName}`);
       });
   };
@@ -259,7 +320,7 @@ export function createGist(name: string) {
 export function getFiles(id: string) {
   return (dispatch: Dispatch, getState: any) => {
     const { gistWithFiles = [] } = getState();
-    console.log("Searhching in existing files.");
+    console.log("Looking in existing files.");
     const selectedGist = gistWithFiles.find((g: GistWithFiles) => g.id == id);
     // show gist from store, if exists and return
     if (selectedGist) {
@@ -292,6 +353,7 @@ export function getFiles(id: string) {
         });
       })
       .catch(function(error) {
+        console.log("Gist not found");
         message.error(`Gist not found`);
         dispatch({
           type: ActionTypes.UPDATE_SELECTED_GIST,

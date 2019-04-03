@@ -1,10 +1,21 @@
 #logo {
   height: 80%;
 }
-/* 
-#logo > img {
-  vertical-align: middle;
-} */
+.ant-menu-dark .ant-menu-item > a {
+  color: rgba(255, 255, 255, 0.822);
+  font-weight: 450;
+}
+.ant-menu-dark .ant-menu-item > a:hover {
+  color: #fff;
+}
+.ant-menu.ant-menu-dark .ant-menu-item-selected > a,
+.ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected > a {
+  color: #52c41a;
+}
+.ant-menu.ant-menu-dark .ant-menu-item-selected,
+.ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
+  background-color: transparent;
+}
 #avatar {
   display: inline-block;
   height: 40px;

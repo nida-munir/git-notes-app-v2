@@ -21,7 +21,12 @@ class App extends React.Component {
             <Navbar />
             <Content>
               <div
-                style={{ height: "calc(100vh - 55px)", padding: "0px 40px" }}
+                style={{
+                  height: "calc(100vh - 55px)",
+                  padding: "0px 40px",
+                  width: "90%",
+                  margin: "auto"
+                }}
               >
                 <Switch>
                   <Route path="/login" component={Welcome} />

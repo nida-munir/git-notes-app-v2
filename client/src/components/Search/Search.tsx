@@ -55,7 +55,6 @@ class SearchGists extends React.Component<SearchProps, SearchState> {
       selectedGist: { files = [] } = {},
       removeSelectedGist
     } = this.props;
-    console.log("Did mount: ", files);
     removeSelectedGist();
   }
   componetDidUpdate() {

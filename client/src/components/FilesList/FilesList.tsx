@@ -3,7 +3,17 @@ const queryString = require("query-string");
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
 import React from "react";
-import { Table, Divider, Tag, Modal, Button, Input, Spin, Icon } from "antd";
+import {
+  Table,
+  Divider,
+  Tag,
+  Modal,
+  Button,
+  Input,
+  Spin,
+  Icon,
+  message
+} from "antd";
 const { TextArea } = Input;
 
 // src
@@ -101,7 +111,7 @@ class FilesList extends React.Component<FileProps, FileState> {
     // if file with this name already exist, return in add
     console.log("edit mode: ", isEditMode);
     if (!isEditMode && selectedGist.files.find(f => f.name === fileName)) {
-      console.log("File with this name already exists.");
+      message.info("File with this name already exists.");
       return;
     }
     updateIsLoading(true);
@@ -115,8 +125,9 @@ class FilesList extends React.Component<FileProps, FileState> {
     });
   };
   public render() {
+    const { selectedGist } = this.props;
     const { files = [] } = this.props.selectedGist;
-    const { isLoading = false, gistWithFiles } = this.props;
+    const { isLoading = false } = this.props;
     const { visible, fileName, fileContent } = this.state;
     const {
       showModal,
@@ -130,6 +141,8 @@ class FilesList extends React.Component<FileProps, FileState> {
     return (
       <div className="voffset3">
         <Spin spinning={isLoading}>
+          <h2>{selectedGist.description}</h2>
+
           <Icon type="plus-circle" onClick={() => showModal(null)} />
           <Modal
             title="Add new File"
@@ -144,7 +157,7 @@ class FilesList extends React.Component<FileProps, FileState> {
               onChange={handleNameChange}
               value={fileName}
             />
-            <br />
+            <div className="voffset1" />
             <TextArea
               placeholder="Content"
               id="fileContent"
