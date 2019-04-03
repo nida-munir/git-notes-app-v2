@@ -2,7 +2,7 @@
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
 import React from "react";
-import { Table, Divider, Spin, Modal, Button, Input } from "antd";
+import { Table, Divider, Spin, Modal, Button, Input, Icon } from "antd";
 // src
 import "./NotebookList.css";
 import {
@@ -25,7 +25,7 @@ class NotebookList extends React.Component<NotebookProps, {}> {
     isEditMode: false,
     gistId: ""
   };
-  showModal = (gist: any) => {
+  showModal = (gist: Gist | null) => {
     const isEditMode = gist ? true : false;
     const userInput = gist ? gist.description : "";
     const gistId = gist ? gist.id : "";
@@ -47,9 +47,6 @@ class NotebookList extends React.Component<NotebookProps, {}> {
     });
   };
 
-  handleEdit = (gist: any) => {
-    this.showModal(gist);
-  };
   handleGistCancel = () => {
     this.setState({
       visible: false,
@@ -83,22 +80,18 @@ class NotebookList extends React.Component<NotebookProps, {}> {
       }
     },
     {
-      title: "Created At",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (text: string) => <p>{text}</p>
-    },
-    {
       title: "Action",
       key: "action",
       render: (text: string, record: any) => (
         <span>
-          <a onClick={() => this.handleEdit(record)}>Edit</a>
+          <Icon type="edit" onClick={() => this.showModal(record)} />
+          {/* <a onClick={() => this.showModal(record)}>Edit</a> */}
           <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(record)}>Delete</a>
+          <Icon type="delete" onClick={() => this.handleDelete(record)} />
+          {/* <a onClick={() => this.handleDelete(record)}>Delete</a> */}
           <Divider type="vertical" />
-
-          <a onClick={() => this.showGistUrl(record)}>Share</a>
+          <Icon type="share-alt" onClick={() => this.showGistUrl(record)} />
+          {/* <a onClick={() => this.showGistUrl(record)}>Share</a> */}
         </span>
       )
     }
@@ -107,7 +100,7 @@ class NotebookList extends React.Component<NotebookProps, {}> {
   showGistUrl = (gist: any) => {
     const { html_url } = gist;
     Modal.success({
-      title: "Url genrated successfully.",
+      title: "Share this link.",
       content: html_url
     });
   };
@@ -164,20 +157,23 @@ class NotebookList extends React.Component<NotebookProps, {}> {
     } = this;
 
     return (
-      <div>
+      <div className="voffset3">
         <Spin spinning={isLoading}>
           <div>
-            <Button
+            <Icon type="plus-circle" onClick={() => showModal(null)} />
+            <Divider type="vertical" />
+
+            {/* <Button
               type="primary"
               onClick={() => showModal(null)}
               className="hoffset"
             >
               New
-            </Button>
-
-            <Button type="primary" onClick={this.refresh}>
+            </Button> */}
+            <Icon type="sync" onClick={this.refresh} />
+            {/* <Button type="primary" onClick={this.refresh}>
               Refresh
-            </Button>
+            </Button> */}
             <Modal
               title="Add new gist"
               visible={visible}

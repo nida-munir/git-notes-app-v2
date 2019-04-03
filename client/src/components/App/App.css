@@ -1,3 +1,4 @@
 #main {
-  padding: 40px 100px;
+  height: "calc(100vh - 55px)";
+  padding: "20px 40px";
 }

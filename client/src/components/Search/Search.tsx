@@ -7,7 +7,12 @@ import { Table, Modal, message, Alert } from "antd";
 // src
 import { getFiles, removeSelectedGist } from "../../action-creators/index";
 import { ApplicationState, GistWithFiles, File } from "../../application-state";
-import { SearchDispatchProps, SearchState, SearchProps } from "../types";
+import {
+  SearchDispatchProps,
+  SearchState,
+  SearchProps,
+  SearchStateProps
+} from "../types";
 
 const Search = Input.Search;
 
@@ -60,25 +65,27 @@ class SearchGists extends React.Component<SearchProps, SearchState> {
   render() {
     const { isLoading, selectedGist: { files = [] } = {} } = this.props;
     return (
-      <div>
-        <Spin spinning={isLoading}>
-          <Search
-            placeholder="Search gists."
-            onSearch={value => this.handleSearch(value)}
-            enterButton
-          />
+      <React.Fragment>
+        <div className="voffset3">
+          <Spin spinning={isLoading}>
+            <Search
+              placeholder="Search gists."
+              onSearch={value => this.handleSearch(value)}
+              enterButton
+            />
 
-          <Table
-            className="voffset1"
-            columns={this.columns}
-            rowKey="raw_url"
-            expandedRowRender={record => (
-              <p style={{ margin: 0 }}>{record.content}</p>
-            )}
-            dataSource={files}
-          />
-        </Spin>
-      </div>
+            <Table
+              className="voffset1"
+              columns={this.columns}
+              rowKey="raw_url"
+              expandedRowRender={record => (
+                <p style={{ margin: 0 }}>{record.content}</p>
+              )}
+              dataSource={files}
+            />
+          </Spin>
+        </div>
+      </React.Fragment>
     );
   }
 }
@@ -97,7 +104,7 @@ function mapDispatchToProps(dispatch: Dispatch<any>): SearchDispatchProps {
       await dispatch(getFiles(id));
     },
     removeSelectedGist: async () => {
-      await dispatch(removeSelectedGist);
+      await dispatch(removeSelectedGist());
     }
   };
 }

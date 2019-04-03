@@ -17,3 +17,11 @@ ReactDOM.render(
 );
 
 serviceWorker.unregister();
+
+/*
+TODOS:
+> Add messages with all calls (success + failures)
+
+
+
+*/

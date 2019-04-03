@@ -9,14 +9,7 @@ html {
 
   /* overflow-x: hidden; */
 }
-#welcome button {
-  background-color: rgb(99, 99, 245) !important;
-  color: white !important;
-  width: auto !important;
-  height: 32px !important;
-  padding: 0px 15px !important;
-  border-radius: 3px;
-}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

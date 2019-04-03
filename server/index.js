@@ -200,8 +200,8 @@ app.post("/api/createGist", (req, res) => {
     description: name,
     public: true,
     files: {
-      [name]: {
-        content: name
+      "hello_world.txt": {
+        content: "-"
       }
     }
   };

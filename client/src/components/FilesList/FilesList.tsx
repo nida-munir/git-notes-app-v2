@@ -3,7 +3,7 @@ const queryString = require("query-string");
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
 import React from "react";
-import { Table, Divider, Tag, Modal, Button, Input, Spin } from "antd";
+import { Table, Divider, Tag, Modal, Button, Input, Spin, Icon } from "antd";
 const { TextArea } = Input;
 
 // src
@@ -13,8 +13,7 @@ import {
   updateIsLoading,
   editFile
 } from "../../action-creators/index";
-import { ApplicationState, Gist } from "../../application-state";
-import { GistWithFiles } from "./../../application-state";
+import { ApplicationState, Gist, File } from "../../application-state";
 import {
   FileDispatchProps,
   FileStateProps,
@@ -42,20 +41,25 @@ class FilesList extends React.Component<FileProps, FileState> {
       key: "x",
       render: (text: string, record: any) => (
         <span>
-          <a onClick={() => this.showModal(record)}>Edit</a>
+          <Icon type="edit" onClick={() => this.showModal(record)} />
           <Divider type="vertical" />
-          <a onClick={() => this.handleDelete(record)}>Delete</a>
+          <Icon type="delete" onClick={() => this.handleDelete(record)} />
         </span>
       )
     }
   ];
 
-  handleDelete = (rec: any) => {
+  handleDelete = (file: File) => {
     const { gistId } = this.parsed;
-    const { deleteFile, updateIsLoading } = this.props;
-    console.log("Deleting file....");
-    updateIsLoading(true);
-    deleteFile(gistId, rec.name);
+    const { deleteFile } = this.props;
+    const confirm = Modal.confirm;
+    confirm({
+      title: `Delete file ${file.name}?`,
+      content: "Are you sure you want to delete this file?",
+      onOk() {
+        deleteFile(gistId, file.name);
+      }
+    });
   };
 
   componentDidMount() {
@@ -92,7 +96,6 @@ class FilesList extends React.Component<FileProps, FileState> {
     });
   };
   handleFileCreation = () => {
-    console.log("creating new file", this.state);
     const { editFile, selectedGist, updateIsLoading } = this.props;
     const { fileContent, fileName, oldFileName, isEditMode } = this.state;
     // if file with this name already exist, return in add
@@ -125,11 +128,9 @@ class FilesList extends React.Component<FileProps, FileState> {
     } = this;
 
     return (
-      <div>
+      <div className="voffset3">
         <Spin spinning={isLoading}>
-          <Button type="primary" onClick={() => showModal(null)}>
-            New
-          </Button>
+          <Icon type="plus-circle" onClick={() => showModal(null)} />
           <Modal
             title="Add new File"
             visible={visible}
@@ -143,6 +144,8 @@ class FilesList extends React.Component<FileProps, FileState> {
               onChange={handleNameChange}
               value={fileName}
             />
+            <br />
+            <br />
             <TextArea
               placeholder="Content"
               id="fileContent"

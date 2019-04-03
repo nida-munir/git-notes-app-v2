@@ -1,12 +1,10 @@
 #logo {
-  display: inline-block;
-  height: 30px;
-  border-radius: 100%;
+  height: 80%;
 }
-
+/* 
 #logo > img {
   vertical-align: middle;
-}
+} */
 #avatar {
   display: inline-block;
   height: 40px;

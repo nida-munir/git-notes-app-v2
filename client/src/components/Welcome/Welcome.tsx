@@ -24,7 +24,7 @@ class Welcome extends Component<WelcomeProps> {
     // when user goes to localhost:3000/, then
     // if user is authenticated, navigate to notebooks page
     if (auth.isSignedIn()) {
-      const { updateGists, updateIsLoading } = this.props;
+      const { updateGists } = this.props;
       updateGists();
       this.props.history.push("/notebooks");
     }
@@ -38,8 +38,6 @@ class Welcome extends Component<WelcomeProps> {
   }
   // please disable popup blocker
   onSuccess = (response: any) => {
-    const { updateIsLoading } = this.props;
-    // dispatch action is loading
     const { code } = response;
     const { updateLocalStorage } = this.props;
     updateLocalStorage(code);
@@ -51,34 +49,29 @@ class Welcome extends Component<WelcomeProps> {
     );
   };
 
-  handleSearch = () => {
-    this.props.history.push("/search");
-  };
   render() {
     const CLIENT_ID = "92bfb1aa190ee8615b78";
     const REDIRECT_URI = "http://localhost:3000/redirect";
     const { isLoading } = this.props;
     return (
-      <div id="welcome">
-        <Spin spinning={isLoading}>
-          <GitHubLogin
-            clientId={CLIENT_ID}
-            onSuccess={this.onSuccess}
-            onFailure={this.onFailure}
-            redirectUri={REDIRECT_URI}
-            scope="user,gist"
-          />
-          <br />
-          <Button
-            className="voffset1"
-            type="primary"
-            icon="search"
-            onClick={this.handleSearch}
-          >
-            Search Gists
-          </Button>
-        </Spin>
-      </div>
+      <React.Fragment>
+        <div id="welcome">
+          <Spin spinning={isLoading}>
+            <GitHubLogin
+              clientId={CLIENT_ID}
+              onSuccess={this.onSuccess}
+              onFailure={this.onFailure}
+              redirectUri={REDIRECT_URI}
+              scope="user,gist"
+            />
+            <div className="voffset1">
+              <h6 id="heading">
+                Please disable any pop-up blockers before signing in.
+              </h6>
+            </div>
+          </Spin>
+        </div>
+      </React.Fragment>
     );
   }
 }
