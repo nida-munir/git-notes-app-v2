@@ -14,7 +14,7 @@ axios.interceptors.request.use(
     // Do something before request is sent
     config.data.token = getGitHubUserFromLocalStorage().token;
     config.data.username = getGitHubUserFromLocalStorage().username;
-    console.log(config.data);
+    console.log("Request body ", config.data);
     return config;
   },
   function(error) {
@@ -29,6 +29,7 @@ axios.interceptors.response.use(
     return response;
   },
   function(error) {
+    // handle 400 and 500 errors
     if (error.response.status >= 400)
       console.log("Logging the error ", error.response.status);
     return;
@@ -137,7 +138,6 @@ export function removeSelectedGist() {
 }
 
 export function updateGists() {
-  const gitHubUser = getGitHubUserFromLocalStorage();
   return (dispatch: Dispatch, getState: any) => {
     // updated isLoading
     dispatch({
@@ -145,11 +145,6 @@ export function updateGists() {
       isLoading: true
     });
     // post to api to get all gists of a user
-    // const { token = "", username = "" } = gitHubUser;
-    // const options = {
-    //   token,
-    //   username
-    // };
     axios
       .post(`${apiUrl}/gists`, {})
       .then(function(response) {
@@ -166,7 +161,7 @@ export function updateGists() {
 }
 
 export function deleteGist(id: string) {
-  const gitHubUser = getGitHubUserFromLocalStorage();
+  // const gitHubUser = getGitHubUserFromLocalStorage();
 
   return (dispatch: Dispatch, getState: any) => {
     // update isLoading
@@ -174,9 +169,9 @@ export function deleteGist(id: string) {
       type: ActionTypes.UPDATE_IS_LOADING,
       isLoading: true
     });
-    const { token = "" } = gitHubUser;
+    // const { token = "" } = gitHubUser;
     const options = {
-      token,
+      // token,
       id
     };
     // delete gist
@@ -198,13 +193,17 @@ export function deleteGist(id: string) {
 
 export function deleteFile(id: string, fileName: string) {
   return (dispatch: Dispatch, getState: any) => {
-    const gitHubUser = getGitHubUserFromLocalStorage();
-    const { token = "" } = gitHubUser;
+    // const gitHubUser = getGitHubUserFromLocalStorage();
+    // const { token = "" } = gitHubUser;
     const options = {
-      token,
+      // token,
       id,
       fileName
     };
+    dispatch({
+      type: ActionTypes.UPDATE_IS_LOADING,
+      isLoading: true
+    });
     axios
       .post(`${apiUrl}/deleteFile`, options)
       .then(function(response) {
@@ -227,10 +226,10 @@ export function editFile(
   fileContent: string
 ) {
   return (dispatch: Dispatch, getState: any) => {
-    const gitHubUser = getGitHubUserFromLocalStorage();
-    const { token = "" } = gitHubUser;
+    // const gitHubUser = getGitHubUserFromLocalStorage();
+    // const { token = "" } = gitHubUser;
     const options = {
-      token,
+      // token,
       id,
       oldFileName,
       updatedFileName,
@@ -260,15 +259,15 @@ export function editFile(
 
 export function editGist(id: string, description: string) {
   return (dispatch: Dispatch, getState: any) => {
-    const gitHubUser = getGitHubUserFromLocalStorage();
+    // const gitHubUser = getGitHubUserFromLocalStorage();
     // update isLoading
     dispatch({
       type: ActionTypes.UPDATE_IS_LOADING,
       isLoading: true
     });
-    const { token = "" } = gitHubUser;
+    // const { token = "" } = gitHubUser;
     const options = {
-      token,
+      // token,
       id,
       description
     };
@@ -290,15 +289,15 @@ export function editGist(id: string, description: string) {
 
 export function createGist(name: string) {
   return (dispatch: Dispatch, getState: any) => {
-    const gitHubUser = getGitHubUserFromLocalStorage();
+    // const gitHubUser = getGitHubUserFromLocalStorage();
     // show loading spinner, set isLoading to true
     dispatch({
       type: ActionTypes.UPDATE_IS_LOADING,
       isLoading: true
     });
-    const { token = "" } = gitHubUser;
+    // const { token = "" } = gitHubUser;
     const options = {
-      token,
+      // token,
       name
     };
     axios
@@ -336,13 +335,13 @@ export function getFiles(id: string) {
       isLoading: true
     });
 
-    const gitHubUser = getGitHubUserFromLocalStorage();
-    const { token } = gitHubUser;
+    // const gitHubUser = getGitHubUserFromLocalStorage();
+    // const { token } = gitHubUser;
     const options = {
-      token: token,
+      // token: token,
       id: id
     };
-    console.log("Searching...");
+    console.log("Fetching from api...");
     axios
       .post(`${apiUrl}/files`, options)
       .then(function(response) {
